@@ -1,0 +1,184 @@
+=========================================
+      ALPHABIT SKILL BACKEND APIs
+=========================================
+Base URL: http://localhost:5000/api
+
+--- 1. AUTHENTICATION & USERS ---
+
+Register a new user
+- Method: POST
+- URL: /users/register
+- Headers: Content-Type: application/json
+- Body (JSON):
+{
+  "name": "Admin User",
+  "email": "admin@example.com",
+  "password": "password123"
+}
+
+Login User
+- Method: POST
+- URL: /users/login
+- Headers: Content-Type: application/json
+- Body (JSON):
+{
+  "email": "admin@example.com",
+  "password": "password123"
+}
+*Note: Returns a "token". Use this token in the "Authorization" header for Admin routes.*
+
+
+--- 2. PUBLIC BLOG ROUTES ---
+
+Get All Blogs (Public)
+- Method: GET
+- URL: /blogs
+- Headers: None
+
+Get Single Blog By Slug (Public)
+- Method: GET
+- URL: /blogs/:slug
+- Headers: None
+- Example: /blogs/my-first-blog
+
+
+--- 3. PROTECTED ADMIN BLOG ROUTES ---
+*Note: All routes below require the Authorization header.*
+*Header -> Key: Authorization, Value: Bearer <your_jwt_token>*
+
+Get All Blogs (Admin)
+- Method: GET
+- URL: /admin/blogs
+
+Get Single Blog By ID (Admin)
+- Method: GET
+- URL: /admin/blogs/:id
+- Example: /admin/blogs/64a2b3c4d5e6f7g8h9i0j1k2
+
+Create New Blog (Admin)
+- Method: POST
+- URL: /admin/blogs
+- Body (form-data):
+  - title (text): "My New Blog"
+  - content (text): "This is the content."
+  - slug (text): "my-custom-slug" [Optional]
+  - image (file): Select an image file
+
+Update Blog By ID (Admin)
+- Method: PUT
+- URL: /admin/blogs/:id
+- Body (form-data):
+  - title (text): "Updated Title"
+  - content (text): "Updated content."
+  - slug (text): "updated-slug" [Optional]
+  - image (file): Select an image file [Optional]
+
+Delete Blog By ID (Admin)
+- Method: DELETE
+- URL: /admin/blogs/:id
+
+
+--- 4. PUBLIC GOOGLE SHEET INQUIRY ROUTES ---
+
+Submit New Demo Class Inquiry
+- Method: POST
+- URL: /inquiries
+- Headers: Content-Type: application/json
+- Body (JSON):
+{
+  "name": "Jane Smith",
+  "email": "jane@example.com",
+  "contactNumber": "9876543210",
+  "skill": "Full Stack Web Development (MERN)"
+}
+
+
+--- 5. MEETING ROUTES ---
+
+Get All Meetings (Public)
+- Method: GET
+- URL: /meetings
+
+Get Single Meeting By ID (Public)
+- Method: GET
+- URL: /meetings/:id
+
+Create New Meeting (Admin)
+- Method: POST
+- URL: /admin/meetings
+- Headers: Key: Authorization, Value: Bearer <your_jwt_token>
+- Body (form-data):
+  - title (text): "Glance at yesterday's Meeting"
+  - subtitle (text): "Discussing progress of batch MERN-04"
+  - image1 (file): select first meeting image file
+  - image2 (file): select second meeting image file
+
+Update Meeting By ID (Admin)
+- Method: PUT
+- URL: /admin/meetings/:id
+- Headers: Key: Authorization, Value: Bearer <your_jwt_token>
+- Body (form-data):
+  - title (text): "Updated Meeting Title" [Optional]
+  - subtitle (text): "Updated Subtitle" [Optional]
+  - image1 (file): select first image file [Optional]
+  - image2 (file): select second image file [Optional]
+
+Delete Meeting By ID (Admin)
+- Method: DELETE
+- URL: /admin/meetings/:id
+- Headers: Key: Authorization, Value: Bearer <your_jwt_token>
+
+--- 6. SEMINAR REGISTRATION ROUTES ---
+
+Submit New Seminar Registration (Public)
+- Method: POST
+- URL: /seminars/register
+- Headers: Content-Type: application/json
+- Note: Rate limit max 5 requests per 10 minutes per IP. Same-phone signup prevented for duplicate batch.
+- Body (JSON):
+{
+  "name": "Jane Doe",
+  "phone": "9876543210",
+  "email": "janedoe@example.com",
+  "college": "Test University",
+  "course": "Computer Science",
+  "city": "Mumbai",
+  "source": "Instagram",
+  "seminarBatch": "July 2026 Batch"
+}
+
+Get All Seminar Registrations (Admin)
+- Method: GET
+- URL: /admin/seminars?batch=July 2026 Batch&status=registered&search=Jane&page=1&limit=10
+- Headers: Key: Authorization, Value: Bearer <your_jwt_token>
+
+Get Single Seminar Registration By ID (Admin)
+- Method: GET
+- URL: /admin/seminars/:id
+- Headers: Key: Authorization, Value: Bearer <your_jwt_token>
+
+Update Seminar Registration Status By ID (Admin)
+- Method: PUT
+- URL: /admin/seminars/:id
+- Headers: Key: Authorization, Value: Bearer <your_jwt_token>, Content-Type: application/json
+- Body (JSON):
+{
+  "status": "attended"
+}
+
+Delete Seminar Registration By ID (Admin)
+- Method: DELETE
+- URL: /admin/seminars/:id
+- Headers: Key: Authorization, Value: Bearer <your_jwt_token>
+
+Export Seminar Registrations to CSV (Admin)
+- Method: GET
+- URL: /admin/seminars/export?batch=July 2026 Batch&status=registered
+- Headers: Key: Authorization, Value: Bearer <your_jwt_token>
+
+Get Seminar Registration Stats (Admin)
+- Method: GET
+- URL: /admin/seminars/stats
+- Headers: Key: Authorization, Value: Bearer <your_jwt_token>
+
+=========================================
