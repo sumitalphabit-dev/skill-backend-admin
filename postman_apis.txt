@@ -181,4 +181,66 @@ Get Seminar Registration Stats (Admin)
 - URL: /admin/seminars/stats
 - Headers: Key: Authorization, Value: Bearer <your_jwt_token>
 
+
+--- 7. SEMINAR EVENT ROUTES ---
+
+Get Currently Active Seminar Event (Public)
+- Method: GET
+- URL: /seminars/current
+- Headers: None
+- Note: Returns currently active event (isActive: true) plus calculated `seatsLeft` and `registeredCount`.
+
+Get All Seminar Events (Admin)
+- Method: GET
+- URL: /admin/seminar-events
+- Headers: Key: Authorization, Value: Bearer <your_jwt_token>
+
+Get Single Seminar Event By ID (Admin)
+- Method: GET
+- URL: /admin/seminar-events/:id
+- Headers: Key: Authorization, Value: Bearer <your_jwt_token>
+
+Create New Seminar Event (Admin)
+- Method: POST
+- URL: /admin/seminar-events
+- Headers: Key: Authorization, Value: Bearer <your_jwt_token>
+- Body (form-data):
+  - batchId (text): "Aug-2026"
+  - topic (text): "Cracking Your First Tech Career"
+  - date (text): "2026-08-02"
+  - startTime (text): "4:00 PM"
+  - endTime (text): "6:00 PM"
+  - mode (text): "Offline"
+  - venue (text): "Alphabit Skill Studio, Rajkot"
+  - venueMapLink (text): "https://maps.google.com/?q=..." [Optional]
+  - language (text): "English & Gujarati/Hindi mix" [Optional]
+  - totalSeats (text/number): "100" [Optional, Default: 100]
+  - isActive (text/boolean): "true" [Optional, Default: true]
+  - venueImage (file): Select venue image file [Optional]
+
+Update Seminar Event By ID (Admin)
+- Method: PUT
+- URL: /admin/seminar-events/:id
+- Headers: Key: Authorization, Value: Bearer <your_jwt_token>
+- Body (form-data):
+  - topic (text): "Updated Seminar Topic" [Optional]
+  - date (text): "2026-08-10" [Optional]
+  - startTime (text): "5:00 PM" [Optional]
+  - endTime (text): "7:00 PM" [Optional]
+  - totalSeats (text/number): "120" [Optional]
+  - isActive (text/boolean): "true" [Optional]
+  - venueImage (file): Select new venue image file [Optional]
+
+Delete Seminar Event By ID (Admin)
+- Method: DELETE
+- URL: /admin/seminar-events/:id
+- Headers: Key: Authorization, Value: Bearer <your_jwt_token>
+
+Activate Seminar Event (Admin)
+- Method: PATCH
+- URL: /admin/seminar-events/:id/activate
+- Headers: Key: Authorization, Value: Bearer <your_jwt_token>
+- Note: Sets target seminar event isActive: true and deactivates all others.
+
 =========================================
+

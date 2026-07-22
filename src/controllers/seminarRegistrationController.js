@@ -3,6 +3,10 @@ const catchAsync = require('../middleware/catchAsync');
 const AppError = require('../utils/AppError');
 const sendEmail = require('../utils/sendEmail');
 
+// Helper to escape special regex characters safely
+const escapeRegex = (string) => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+
 // @desc    Submit a new seminar registration
 // @route   POST /api/seminars/register
 // @access  Public
@@ -264,12 +268,18 @@ const getSeminarRegistrations = catchAsync(async (req, res) => {
         query.status = status;
     }
 
-    if (search) {
-        const searchRegex = new RegExp(search, 'i');
+    if (search && search.trim()) {
+        const safeSearch = escapeRegex(search.trim());
+        const searchRegex = new RegExp(safeSearch, 'i');
         query.$or = [
             { name: searchRegex },
             { phone: searchRegex },
-            { email: searchRegex }
+            { email: searchRegex },
+            { college: searchRegex },
+            { course: searchRegex },
+            { city: searchRegex },
+            { source: searchRegex },
+            { seminarBatch: searchRegex }
         ];
     }
 
@@ -355,12 +365,18 @@ const exportSeminarRegistrations = catchAsync(async (req, res) => {
         query.status = status;
     }
 
-    if (search) {
-        const searchRegex = new RegExp(search, 'i');
+    if (search && search.trim()) {
+        const safeSearch = escapeRegex(search.trim());
+        const searchRegex = new RegExp(safeSearch, 'i');
         query.$or = [
             { name: searchRegex },
             { phone: searchRegex },
-            { email: searchRegex }
+            { email: searchRegex },
+            { college: searchRegex },
+            { course: searchRegex },
+            { city: searchRegex },
+            { source: searchRegex },
+            { seminarBatch: searchRegex }
         ];
     }
 

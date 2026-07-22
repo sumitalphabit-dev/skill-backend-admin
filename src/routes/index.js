@@ -37,8 +37,14 @@ router.use('/admin/meetings', adminMeetingRoutes);
 const seminarRegistrationRoutes = require('./seminarRegistrationRoutes');
 router.use('/seminars', seminarRegistrationRoutes);
 
+const seminarEventRoutes = require('./seminarEventRoutes');
+router.use('/seminars', seminarEventRoutes);
+
 // Mount admin seminar routes
 const adminSeminarRoutes = require('./adminSeminarRoutes');
 router.use('/admin/seminars', adminSeminarRoutes);
+
+const adminSeminarEventRoutes = require('./adminSeminarEventRoutes');
+router.use('/admin/seminar-events', adminSeminarEventRoutes);
 
 module.exports = router;

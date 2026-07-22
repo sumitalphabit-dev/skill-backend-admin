@@ -8,6 +8,8 @@ const app = express();
 // Body parser
 app.use(express.json());
 
+app.set("trust proxy", 1);
+
 // Enable CORS
 app.use(cors());
 

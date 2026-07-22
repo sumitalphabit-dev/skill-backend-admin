@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Trash2, Search, Download, Calendar, Users, Award, BookOpen, AlertCircle } from 'lucide-react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Trash2, Search, Download, Calendar, Users, Award, BookOpen, AlertCircle, X } from 'lucide-react';
 import api from '../../api/axios';
 
 const SeminarList = () => {
@@ -9,6 +9,7 @@ const SeminarList = () => {
   
   // Filtering, Search and Pagination states
   const [searchTerm, setSearchTerm] = useState('');
+  const [activeSearch, setActiveSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [batchFilter, setBatchFilter] = useState('');
   const [page, setPage] = useState(1);
@@ -19,6 +20,9 @@ const SeminarList = () => {
   // Statistics and Batches list
   const [stats, setStats] = useState(null);
   const [batches, setBatches] = useState([]);
+
+  // Ref to hold debounce timer
+  const debounceTimerRef = useRef(null);
 
   const fetchStats = async () => {
     try {
@@ -34,7 +38,7 @@ const SeminarList = () => {
     }
   };
 
-  const fetchRegistrations = async () => {
+  const fetchRegistrations = useCallback(async () => {
     try {
       setLoading(true);
       setError('');
@@ -44,7 +48,7 @@ const SeminarList = () => {
           limit,
           status: statusFilter,
           batch: batchFilter,
-          search: searchTerm
+          search: activeSearch
         }
       });
       if (response.data?.success) {
@@ -57,23 +61,59 @@ const SeminarList = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [page, limit, statusFilter, batchFilter, activeSearch]);
 
-  // Trigger registration fetch when search, filters, or page changes
+  // Debounce search input typing (300ms)
+  useEffect(() => {
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
+    debounceTimerRef.current = setTimeout(() => {
+      setActiveSearch((prev) => {
+        if (prev !== searchTerm) {
+          setPage(1);
+          return searchTerm;
+        }
+        return prev;
+      });
+    }, 300);
+
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, [searchTerm]);
+
+  // Fetch registrations when filters, active search query, or page change
   useEffect(() => {
     fetchRegistrations();
-  }, [page, statusFilter, batchFilter]);
+  }, [fetchRegistrations]);
 
-  // Load stats and batch options once on mount
+  // Load stats once on mount
   useEffect(() => {
     fetchStats();
   }, []);
 
-  // Handle manual trigger for search query
+  // Handle immediate manual form submission for search query
   const handleSearchSubmit = (e) => {
     e.preventDefault();
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
     setPage(1);
-    fetchRegistrations();
+    setActiveSearch(searchTerm);
+  };
+
+  // Clear search field
+  const handleClearSearch = () => {
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+    setSearchTerm('');
+    setActiveSearch('');
+    setPage(1);
   };
 
   const handleStatusChange = async (id, newStatus) => {
@@ -110,7 +150,7 @@ const SeminarList = () => {
         params: {
           status: statusFilter,
           batch: batchFilter,
-          search: searchTerm
+          search: activeSearch
         },
         responseType: 'blob'
       });
@@ -230,11 +270,33 @@ const SeminarList = () => {
             <input 
               type="text" 
               className="input-field" 
-              placeholder="Search by name, email, phone..." 
-              style={{ width: '100%', paddingLeft: '40px' }}
+              placeholder="Search by name, email, phone, college, course..." 
+              style={{ width: '100%', paddingLeft: '40px', paddingRight: searchTerm ? '36px' : '12px' }}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
+            {searchTerm && (
+              <button
+                type="button"
+                onClick={handleClearSearch}
+                style={{
+                  position: 'absolute',
+                  right: '10px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: 'var(--text-muted)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: '2px'
+                }}
+                title="Clear Search"
+              >
+                <X size={16} />
+              </button>
+            )}
           </div>
 
           {/* Batch Filter Dropdown */}
@@ -267,11 +329,6 @@ const SeminarList = () => {
               <option value="cancelled">Cancelled</option>
             </select>
           </div>
-
-          {/* Apply Search Button */}
-          <button type="submit" className="btn btn-secondary" style={{ padding: '10px 18px' }}>
-            Search
-          </button>
         </form>
       </div>
 
